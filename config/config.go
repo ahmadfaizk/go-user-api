@@ -6,6 +6,8 @@ import (
 
 type Config struct {
 	ServerPort       int    `mapstructure:"SERVER_PORT"`
+	JWTAccessSecret  string `mapstructure:"JWT_ACCESS_SECRET"`
+	JWTRefreshSecret string `mapstructure:"JWT_REFRESH_SECRET"`
 	DatabaseHost     string `mapstructure:"DB_HOST"`
 	DatabasePort     int    `mapstructure:"DB_PORT"`
 	DatabaseName     string `mapstructure:"DB_NAME"`

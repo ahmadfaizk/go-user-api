@@ -3,6 +3,7 @@ package user
 import (
 	"net/http"
 	"user-api/domain"
+	"user-api/internal/helper"
 
 	"github.com/labstack/echo/v4"
 )
@@ -12,11 +13,20 @@ func GetUserMethod(us domain.UserService) echo.HandlerFunc {
 		ctx := c.Request().Context()
 		id := c.Param("id")
 
-		data, err := us.FindById(ctx, id)
-		if err != nil {
-			return err
+		authUser := helper.ExtractUserFromContext(c)
+		if authUser.Role == domain.RoleUser {
+			if authUser.ID != id {
+				return echo.ErrForbidden
+			}
 		}
 
-		return c.JSON(http.StatusOK, data)
+		data, err := us.FindById(ctx, id)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusNotFound)
+		}
+
+		response := fetchUserResponse(data)
+
+		return c.JSON(http.StatusOK, response)
 	}
 }

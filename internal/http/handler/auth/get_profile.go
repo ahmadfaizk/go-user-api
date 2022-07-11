@@ -1,4 +1,4 @@
-package user
+package auth
 
 import (
 	"net/http"
@@ -8,7 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type FetchUserResponse struct {
+type GetProfileResponse struct {
 	ID        string `json:"id,omitempty"`
 	Name      string `json:"name"`
 	Username  string `json:"username"`
@@ -17,8 +17,8 @@ type FetchUserResponse struct {
 	UpdatedAt string `json:"updated_at"`
 }
 
-func fetchUserResponse(u *domain.User) *FetchUserResponse {
-	return &FetchUserResponse{
+func getProfileResponse(u *domain.User) *GetProfileResponse {
+	return &GetProfileResponse{
 		ID:        u.ID.Hex(),
 		Name:      u.Name,
 		Username:  u.Username,
@@ -28,29 +28,18 @@ func fetchUserResponse(u *domain.User) *FetchUserResponse {
 	}
 }
 
-func fetchUserResponses(us []*domain.User) []*FetchUserResponse {
-	res := make([]*FetchUserResponse, len(us))
-	for i, u := range us {
-		res[i] = fetchUserResponse(u)
-	}
-	return res
-}
-
-func FetchUserMethod(us domain.UserService) echo.HandlerFunc {
+func GetProfileMethod(us domain.UserService) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
 
 		authUser := helper.ExtractUserFromContext(c)
-		if authUser.Role != domain.RoleAdmin {
-			return echo.ErrForbidden
-		}
 
-		data, err := us.Fetch(ctx)
+		profile, err := us.FindByUsername(ctx, authUser.Username)
 		if err != nil {
 			return err
 		}
-		response := fetchUserResponses(data)
+		resp := getProfileResponse(profile)
 
-		return c.JSON(http.StatusOK, response)
+		return c.JSON(http.StatusOK, resp)
 	}
 }

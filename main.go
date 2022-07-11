@@ -2,15 +2,14 @@ package main
 
 import (
 	"log"
-	"net/http"
 	"user-api/config"
 	"user-api/internal/db"
+	"user-api/internal/db/seeder"
 	"user-api/internal/http/router"
 	"user-api/internal/http/server"
 	userRepo "user-api/internal/repository/user"
+	authService "user-api/internal/service/auth"
 	userService "user-api/internal/service/user"
-
-	"github.com/labstack/echo/v4"
 )
 
 func main() {
@@ -24,12 +23,12 @@ func main() {
 	}
 	userRepository := userRepo.NewUserRepository(db)
 	userService := userService.NewUserService(userRepository)
+	authService := authService.NewAuthService(config, userRepository)
+	seeder.RunAdminSeeder(userService)
 
 	e := server.New()
-	router.NewUserRoute(e, userService)
+	router.NewUserRoute(e, config, userService)
+	router.NewAuthRoute(e, config, authService, userService)
 
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!")
-	})
 	e.Logger.Fatal(e.Start(":8080"))
 }
