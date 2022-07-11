@@ -10,15 +10,15 @@ services:
     container_name: userapi-app
     restart: unless-stopped
     ports:
-      - 8080:8080
+      - ${SERVER_PORT}:${SERVER_PORT}
   db:
     image: mongo:latest
     container_name: userapi-db
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: qAzWsxEdC
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
     ports:
-      - 27017:27017
+      - ${DB_PORT}:${DB_PORT}
     volumes:
       - db_data:/data/db
 

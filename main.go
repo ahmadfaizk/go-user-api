@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"user-api/config"
 	"user-api/internal/db"
@@ -30,5 +31,5 @@ func main() {
 	router.NewUserRoute(e, config, userService)
 	router.NewAuthRoute(e, config, authService, userService)
 
-	e.Logger.Fatal(e.Start(":8080"))
+	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", config.ServerPort)))
 }
