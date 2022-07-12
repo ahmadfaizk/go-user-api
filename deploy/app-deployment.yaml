@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-userapi-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: userapi-app
+  template:
+    metadata:
+      labels:
+        app: userapi-app
+    spec:
+      containers:
+        - name: userapi-app-container
+          image: ahmadfaizk/userapi-app
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - secretRef:
+                name: app-secret
