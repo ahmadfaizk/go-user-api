@@ -102,7 +102,7 @@ func (u *userRepository) Update(ctx context.Context, id string, user *domain.Use
 	selector := bson.M{"_id": objectId}
 	userData := bson.M{
 		"name":       user.Name,
-		"username":   user.Password,
+		"username":   user.Username,
 		"password":   user.Password,
 		"updated_at": user.UpdatedAt,
 	}
